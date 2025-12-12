@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predict - Astronaut Health AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <nav>
+        <h1>Astronaut Health AI by Null and Beyond</h1>
+    </nav>
+
+    <!-- Cosmic Background Elements -->
+    <div class="cosmic-orb orb-1"></div>
+    <div class="cosmic-orb orb-2"></div>
+    <div class="cosmic-orb orb-3"></div>
+
+    <div class="container">
+        <div class="card" style="max-width: 800px; margin: 0 auto;">
+            <h2 style="margin-bottom: 2rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem;">Enter
+                Vitals</h2>
+            <form action="/predict" method="POST">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Astronaut Name</label>
+                        <input type="text" name="name" required placeholder="e.g. kishan prajapati">
+                    </div>
+                    <div class="form-group">
+                        <label>Respiration Rate</label>
+                        <input type="number" step="any" name="respiration_rate" required placeholder="e.g. 16.2">
+                    </div>
+                    <div class="form-group">
+                        <label>Carbs Intake (g)</label>
+                        <input type="number" step="any" name="carbs_intake" required placeholder="e.g. 250.0">
+                    </div>
+                    <div class="form-group">
+                        <label>Water Intake (ml)</label>
+                        <input type="number" step="any" name="water_intake" required placeholder="e.g. 2500.0">
+                    </div>
+                    <div class="form-group">
+                        <label>Radiation Level</label>
+                        <input type="number" step="any" name="radiation" required placeholder="e.g. 0.45">
+                    </div>
+                    <div class="form-group">
+                        <label>Blood Pressure (Sys)</label>
+                        <input type="number" step="any" name="blood_pressure_sys" required placeholder="e.g. 120.5">
+                    </div>
+                    <div class="form-group">
+                        <label>Blood Pressure (Dia)</label>
+                        <input type="number" step="any" name="blood_pressure_dia" required placeholder="e.g. 80.0">
+                    </div>
+                    <div class="form-group">
+                        <label>Oxygen Level (%)</label>
+                        <input type="number" step="any" name="oxygen_level" required placeholder="e.g. 98.0">
+                    </div>
+                    <div class="form-group">
+                        <label>Sleep Hours</label>
+                        <input type="number" step="any" name="sleep_hours" required placeholder="e.g. 7.5">
+                    </div>
+                    <div class="form-group">
+                        <label>Cabin Temperature (°C)</label>
+                        <input type="number" step="any" name="cabin_temperature" required placeholder="e.g. 22.0">
+                    </div>
+                    <div class="form-group">
+                        <label>Mood Score (1-10)</label>
+                        <input type="number" step="any" name="mood_score" required placeholder="e.g. 7">
+                    </div>
+                </div>
+                <div style="text-align: right; margin-top: 2rem;">
+                    <button type="submit" class="btn">Calculate Health Score</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>

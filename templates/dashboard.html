@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Astronaut Health AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .metric-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .metric-label {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            text-transform: capitalize;
+        }
+
+        .metric-value {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .metric-gap {
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .gap-pos {
+            color: #4ade80;
+        }
+
+        .gap-neg {
+            color: #f87171;
+        }
+
+        .gap-neutral {
+            color: #94a3b8;
+        }
+
+        .score-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: conic-gradient(var(--primary) calc(var(--score) * 1%), rgba(255, 255, 255, 0.1) 0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .score-inner {
+            width: 180px;
+            height: 180px;
+            background: var(--card-bg);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .score-val {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--secondary);
+            text-shadow: 0 0 20px rgba(0, 245, 212, 0.5);
+        }
+
+        .score-label {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-top: -0.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+        }
+
+        th,
+        td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        th {
+            color: #94a3b8;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .mode-eda-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .chart-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .chart-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .chart-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #e2e8f0;
+        }
+
+        .section-header {
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+            border-left: 4px solid var(--primary);
+            padding-left: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <h1>Astronaut Health AI by Null and Beyond</h1>
+    </nav>
+
+    <!-- Cosmic Background Elements -->
+    <div class="cosmic-orb orb-1"></div>
+    <div class="cosmic-orb orb-2"></div>
+    <div class="cosmic-orb orb-3"></div>
+
+    <div class="container">
+        {% if mode == 'prediction' %}
+        <div class="card">
+            <h2 style="text-align: center; margin-bottom: 2rem;">Health Report: {{ name }}</h2>
+
+            <div class="score-circle" style="--score: {{ prediction }}; margin-bottom: 3rem;">
+                <div class="score-inner">
+                    <span class="score-val">{{ prediction }}</span>
+                    <span class="score-label">Health Score</span>
+                </div>
+            </div>
+
+            <div class="metric-card"
+                style="text-align: center; margin-bottom: 2rem; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2);">
+                <span class="metric-label" style="color: #60a5fa;">AI Recommendation</span>
+                <p style="margin-top: 0.5rem; font-size: 1.1rem;">
+                    {% if prediction >= 85 %}
+                    Vital signs are optimal. Continue current mission parameters.
+                    {% elif prediction >= 70 %}
+                    Health status is stable but requires monitoring. Review metabolic inputs.
+                    {% else %}
+                    CRITICAL: Immediate medical attention recommended. Adjust cabin conditions.
+                    {% endif %}
+                </p>
+            </div>
+
+            <h3 class="section-header">Detailed Biometrics</h3>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Input Value</th>
+                            <th>Average</th>
+                            <th>Gap (Input - Avg)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for key, value in input_data.items() %}
+                        <tr>
+                            <td style="text-transform: capitalize;">{{ key.replace('_', ' ') }}</td>
+                            <td>{{ value }}</td>
+                            <td>{{ "%.2f"|format(averages[key]) }}</td>
+                            <td>
+                                {% set gap = gaps[key] %}
+                                <span
+                                    class="metric-gap {% if gap > 0 %}gap-pos{% elif gap < 0 %}gap-neg{% else %}gap-neutral{% endif %}">
+                                    {{ "%.2f"|format(gap) }}
+                                    {% if gap > 0 %}↑{% elif gap < 0 %}↓{% endif %} </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+
+
+            <div style="margin-top: 3rem; text-align: center;">
+                <a href="/predict" class="btn">New Prediction</a>
+            </div>
+        </div>
+
+        {% elif mode == 'eda' %}
+        <div class="card">
+            <h2 style="text-align: center; margin-bottom: 1rem;">Mission Data Analytics</h2>
+            <p style="text-align: center; color: #94a3b8; max-width: 600px; margin: 0 auto 3rem auto;">
+                Exploratory Data Analysis of historical astronaut health records used to train the prediction model.
+            </p>
+
+            <div class="mode-eda-grid">
+                {% for img in images %}
+                <div class="chart-card">
+                    <div class="chart-title">{{ img.replace('_', ' ').replace('.png', '').title() }}</div>
+                    <img src="{{ url_for('static', filename=img) }}" alt="{{ img }}">
+                </div>
+                {% endfor %}
+            </div>
+
+            <div style="margin-top: 3rem; text-align: center;">
+                <a href="/predict" class="btn">Start New Prediction</a>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if history %}
+        <div class="card" style="margin-top: 3rem;">
+            <h3 class="section-header" style="margin-top: 0;">Prediction History</h3>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Astronaut Name</th>
+                            <th>Health Score</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in history %}
+                        <tr>
+                            <td>{{ record.date }}</td>
+                            <td>{{ record.name }}</td>
+                            <td>{{ record.prediction }}</td>
+                            <td>
+                                {% if record.prediction >= 85 %}
+                                <span style="color: #4ade80;">Good</span>
+                                {% elif record.prediction >= 70 %}
+                                <span style="color: #facc15;">Stable</span>
+                                {% else %}
+                                <span style="color: #f87171;">Critical</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Add some simple animation to table rows if they exist
+        const rows = document.querySelectorAll('tbody tr');
+        if (rows.length > 0) {
+            rows.forEach((row, i) => {
+                row.style.animation = `fadeIn 0.5s ease forwards ${i * 0.1}s`;
+                row.style.opacity = '0';
+            });
+
+            // Define animation
+            const style = document.createElement('style');
+            style.innerHTML = `
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(10px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+    </script>
+</body>
+
+</html>
