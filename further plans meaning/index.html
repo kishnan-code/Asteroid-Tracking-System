@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Astronaut Health Tracker</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles.css">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="video-bg-overlay"></div> <!-- Aesthetic overlay if needed -->
+
+    <div class="app-container">
+        <!-- Navigation -->
+        <nav class="glass-panel">
+            <div class="logo">
+                <i class="fa-solid fa-user-astronaut"></i>
+                <span>Astro<span class="highlight">Health</span>.AI</span>
+            </div>
+            <div class="nav-links">
+                <a href="#dashboard" class="active">Dashboard</a>
+                <a href="#ml-module">AI Analysis</a>
+                <a href="#fitness">Fitness</a>
+                <a href="#environment">Environment</a>
+                <a href="#profile">Profile</a>
+            </div>
+            <div class="nav-status">
+                <span class="status-dot online"></span>
+                <span>System Online</span>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <header class="hero-section">
+            <div class="hero-content">
+                <h1>AI Astronaut <br><span class="glitch" data-text="Health Monitoring">Health Monitoring</span> System
+                </h1>
+                <p class="subtitle">Real-time vitals, predictions & anomaly detection powered by <span
+                        class="neon-text">Deep Learning</span></p>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="label">Mission Time</span>
+                        <span class="value" id="mission-time">T+ 42D 12H 30M</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="label">AI Confidence</span>
+                        <span class="value success-text">99.8%</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <!-- Live Health Dashboard -->
+            <section id="dashboard" class="section-container">
+                <h2 class="section-title"><i class="fa-solid fa-heart-pulse"></i> Live Health Dashboard</h2>
+                <div class="grid-container">
+                    <!-- Card 1: Heart Rate -->
+                    <div class="card metric-card">
+                        <div class="card-header">
+                            <h3>Heart Rate</h3>
+                            <i class="fa-solid fa-heartbeat icon-glow"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="main-value"><span id="bpm-value">72</span> <span class="unit">BPM</span></div>
+                            <div class="mini-chart-container">
+                                <canvas id="bpmChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: SpO2 -->
+                    <div class="card metric-card">
+                        <div class="card-header">
+                            <h3>Blood Oxygen</h3>
+                            <i class="fa-solid fa-lungs icon-glow"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="main-value"><span id="spo2-value">98</span> <span class="unit">%</span></div>
+                            <div class="details">Status: <span class="success-text">Normal</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: Body Temp -->
+                    <div class="card metric-card">
+                        <div class="card-header">
+                            <h3>Body Temp</h3>
+                            <i class="fa-solid fa-temperature-low icon-glow"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="main-value"><span id="temp-value">36.6</span> <span class="unit">°C</span></div>
+                            <div class="details">Stable</div>
+                        </div>
+                    </div>
+
+                    <!-- Card 4: Respiration -->
+                    <div class="card metric-card">
+                        <div class="card-header">
+                            <h3>Respiration</h3>
+                            <i class="fa-solid fa-wind icon-glow"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="main-value"><span id="resp-value">16</span> <span class="unit">RPM</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Card 5: Blood Pressure -->
+                    <div class="card metric-card">
+                        <div class="card-header">
+                            <h3>Blood Pressure</h3>
+                            <i class="fa-solid fa-activity icon-glow"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="main-value"><span id="bp-value">120/80</span> <span class="unit">mmHg</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 6: ECG Waveform -->
+                    <div class="card metric-card wide-card">
+                        <div class="card-header">
+                            <h3>ECG Waveform</h3>
+                            <span class="live-badge">LIVE</span>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="ecgChart" height="100"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AI + ML Module -->
+            <section id="ml-module" class="section-container">
+                <h2 class="section-title"><i class="fa-solid fa-brain"></i> AI + Machine Learning Analysis</h2>
+                <div class="ml-grid">
+                    <!-- Forecast Panel -->
+                    <div class="card ml-panel large">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-chart-line"></i> Vitals Forecast (Next 24 Hours)</h3>
+                            <div class="toggle-switch">
+                                <span>Edge Mode</span>
+                                <label class="switch">
+                                    <input type="checkbox" id="cloud-toggle" checked>
+                                    <span class="slider round"></span>
+                                </label>
+                                <span>Cloud Mode</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="forecastChart"></canvas>
+                            <div class="prediction-info">
+                                <p>Prediction Confidence: <span class="neon-text">98.2%</span></p>
+                                <p>Model: <span class="neon-text">LSTM-Autoencoder v2.4</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Anomaly Detection -->
+                    <div class="card ml-panel small">
+                        <h3>Anomaly Detection</h3>
+                        <div class="anomaly-indicator safe" id="anomaly-status">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <span id="anomaly-text">No Anomalies Detected</span>
+                        </div>
+                        <div class="risk-meter">
+                            <span>Risk Score: </span>
+                            <div class="meter-bar">
+                                <div class="meter-fill low" style="width: 15%;"></div>
+                            </div>
+                            <span class="risk-label low">Low</span>
+                        </div>
+                        <div class="contributing-factors">
+                            <h4>Top Risk Factors</h4>
+                            <ul id="risk-factors-list">
+                                <li>Sleep Quality (Stable)</li>
+                                <li>Hydration (Optimal)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Split Section: Fitness & Environment -->
+            <div class="split-section">
+                <!-- Fitness -->
+                <section id="fitness" class="section-container half">
+                    <h2 class="section-title"><i class="fa-solid fa-dumbbell"></i> Fitness & Activity</h2>
+                    <div class="card">
+                        <ul class="stats-list">
+                            <li>
+                                <span>Steps (Inside Module)</span>
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar" style="width: 65%;"></div>
+                                </div>
+                                <span class="val">6,540 / 10k</span>
+                            </li>
+                            <li>
+                                <span>Muscle Health Index</span>
+                                <span class="val success-text">94%</span>
+                            </li>
+                            <li>
+                                <span>Bone Density Analysis</span>
+                                <span class="val warning-text">Stable (-0.1%)</span>
+                            </li>
+                            <li>
+                                <span>Exercise Compliance</span>
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar" style="width: 85%;"></div>
+                                </div>
+                                <span class="val">85%</span>
+                            </li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Environment -->
+                <section id="environment" class="section-container half">
+                    <h2 class="section-title"><i class="fa-solid fa-shuttle-space"></i> Spacecraft Environment</h2>
+                    <div class="env-grid">
+                        <div class="env-item">
+                            <span class="label">Cabin Temp</span>
+                            <span class="value">22.5°C</span>
+                        </div>
+                        <div class="env-item">
+                            <span class="label">Oxygen (O2)</span>
+                            <span class="value">21.0%</span>
+                        </div>
+                        <div class="env-item">
+                            <span class="label">CO2</span>
+                            <span class="value">0.04%</span>
+                        </div>
+                        <div class="env-item warning">
+                            <span class="label">Radiation</span>
+                            <span class="value">0.45 mSv/h</span>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Astronaut Profile -->
+            <section id="profile" class="section-container">
+                <div class="card profile-card">
+                    <div class="profile-layout">
+                        <div class="profile-image">
+                            <!-- Placeholder reference to asset -->
+                            <img src="assets/astronaut.png" alt="Astronaut">
+                            <div class="status-ring online"></div>
+                        </div>
+                        <div class="profile-info">
+                            <h3>Major Alex "Nova" Chen</h3>
+                            <p class="role">Mission Specialist | ID: XJ-920</p>
+                            <p class="meta">Weightless Time: 1204 HRS</p>
+                            <div class="daily-summary">
+                                <h4>AI Daily Summary</h4>
+                                <p>"Vitals are within nominal range. Slight variability in heart rate variability (HRV)
+                                    detected during sleep cycle. Recommended: Increase hydration by 200ml."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-links">
+                <a href="#">Mission Control</a>
+                <a href="#">System Diagnostics</a>
+                <a href="#">Privacy Protocol</a>
+            </div>
+            <p>Powered by DeepSpace AI • NASA/ESA Compatible</p>
+        </footer>
+    </div>
+
+    <!-- Floating AI Assistant -->
+    <div class="floating-ai" id="ai-assistant-btn">
+        <div class="ai-core"></div>
+        <div class="ai-rings"></div>
+    </div>
+
+    <!-- AI Modal/Chat (Hidden by default) -->
+    <div class="ai-modal hidden" id="ai-modal">
+        <div class="ai-modal-header">
+            <h3>AstroAI Assistant</h3>
+            <span class="close-ai">&times;</span>
+        </div>
+        <div class="ai-messages" id="ai-messages">
+            <div class="msg ai">Hello Major. All systems nominal. How can I assist?</div>
+        </div>
+        <div class="ai-input">
+            <input type="text" placeholder="Command...">
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
